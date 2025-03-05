@@ -1,8 +1,8 @@
 function fazerRequisicao() {
 
-    const url = "http://localhost:8080/restaurantes";
+    const url = "http://localhost:8080/formas-pagamento";
 
-    fetch(url)
+    fetch(url, {headers: { "Content-Type": "application/json"}})
         .then(response => {
             if (!response.ok) {
                 throw new Error('Erro na requisição: ' + response.statusText);
@@ -10,29 +10,27 @@ function fazerRequisicao() {
             return response.json();
         })
         .then(data => {
-            document.getElementById("resposta").textContent = JSON.stringify(data, null, 2);
+            preencherTabela(data);
         })
         .catch(error => {
-            document.getElementById("resposta").textContent = 'Erro: ' + error.message;
+            const elementoErro = document.getElementById("erro");
+            elementoErro.textContent = 'Erro: ' + error.message;
+            elementoErro.style.display = "inline-block"
         });
 }
 
-function fazerRequisicaoPut() {
+function preencherTabela(dados) {
+    const tabela = document.getElementById("tabela");
+    tabela.innerHTML = "";
 
-    const url = "http://localhost:8080/restaurantes/1/fechamento";
+    dados.slice(0, 10).forEach(item => {
+        const linha = document.createElement("tr");
 
-    fetch(url, {
-        method: "PUT"})
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Erro na requisição: ' + response.statusText);
-            }
-            return response.json();
-        })
-        .then(data => {
-            document.getElementById("resposta").textContent = JSON.stringify(data, null, 2);
-        })
-        .catch(error => {
-            document.getElementById("resposta").textContent = 'Erro: ' + error.message;
-        });
+        linha.innerHTML = `
+            <td>${item.id}</td>
+            <td>${item.descricao}</td>
+        `;
+
+        tabela.appendChild(linha);
+    })
 }
